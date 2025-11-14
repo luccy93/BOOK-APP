@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+</head>
+<body>
+
+<h1>Book List</h1>
+
+<table border="1" id="bookTable">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Price</th>
+    </tr>
+</table>
+
+<h2>Add New Book</h2>
+<form id="bookForm">
+    Title: <input type="text" id="title" required><br><br>
+    Author: <input type="text" id="author" required><br><br>
+    Price: <input type="number" id="price" required step="0.01"><br><br>
+    <button type="submit">Add Book</button>
+</form>
+
+<script>
+function loadBooks() {
+    fetch("http://localhost:3000/books")
+        .then(response => response.json())
+        .then(data => {
+            const table = document.getElementById("bookTable");
+
+            data.forEach(book => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = book.book_id;
+                row.insertCell(1).textContent = book.title;
+                row.insertCell(2).textContent = book.author;
+                row.insertCell(3).textContent = book.price;
+            });
+        });
+}
+
+document.getElementById("bookForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const newBook = {
+        title: document.getElementById("title").value,
+        author: document.getElementById("author").value,
+        price: document.getElementById("price").value
+    };
+
+    fetch("http://localhost:3000/books", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBook)
+    })
+    .then(response => response.json())
+    .then(() => {
+        alert("Book added!");
+        location.reload();  // Reload to update the list
+    });
+});
+
+loadBooks();
+</script>
+
+</body>
+</html>
